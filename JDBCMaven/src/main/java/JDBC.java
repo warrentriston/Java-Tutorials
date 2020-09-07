@@ -1,6 +1,8 @@
 import com.sun.org.apache.bcel.internal.generic.SWITCH;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class JDBC {
@@ -12,25 +14,33 @@ public class JDBC {
         String password = "root123@";
 
         Scanner scanner = new Scanner((System.in));
-        System.out.println("Select Option \n 1. Insert \n 2. Update \n 3. Delete \n 4. Retrieve");
-        byte option = Byte.parseByte(scanner.next());
-        switch(option) {
-            case 1:
-                insert(url, username, password);
-                break;
-            case 2:
-                update(url, username, password);
-                break;
-            case 3:
-                delete(url, username, password);
-                break;
-            case 4:
-                retrieve(url, username, password);
-                break;
-            default :
-                System.out.println("Invalid Selection");
-                break;
+        String answer = "Yes";
+        while(answer.equals("Yes"))
+        {
+            System.out.println("\nSelect Option \n 1. Insert \n 2. Update \n 3. Delete \n 4. Retrieve \n 5. Exit");
+            byte option = Byte.parseByte(scanner.next());
+            switch(option) {
+                case 1:
+                    insert(url, username, password);
+                    break;
+                case 2:
+                    update(url, username, password);
+                    break;
+                case 3:
+                    delete(url, username, password);
+                    break;
+                case 4:
+                    retrieve(url, username, password);
+                    break;
+                case 5:
+                    answer = "No";
+                    break;
+                default :
+                    System.out.println("Invalid Selection");
+                    break;
+            }
         }
+
     }
 
     static void insert(String url, String username, String password)
@@ -62,6 +72,7 @@ public class JDBC {
 
     static void retrieve(String url, String username, String password)
     {
+        List<PersonPOJO> personList = new ArrayList<PersonPOJO>();
         try {
             Connection connection = DriverManager.getConnection(url, username, password);
             System.out.println("SuccessFull");
@@ -70,8 +81,20 @@ public class JDBC {
             ResultSet resultSet = statement.executeQuery(fetch);
             while(resultSet.next())
             {
-                System.out.println("First Name :" + resultSet.getString("firstname"));
-                System.out.println("Second Name :" + resultSet.getString("secondname"));
+                PersonPOJO person = new PersonPOJO();
+                person.setPersonID(Integer.parseInt(resultSet.getString("ID")));
+                person.setFirstName(resultSet.getString("firstname"));
+                person.setLastName(resultSet.getString("secondname"));
+                personList.add(person);
+            }
+
+            if(!personList.isEmpty())
+            {
+                for (PersonPOJO person : personList) {
+                    System.out.println("First Name :" + person.getPersonID());
+                    System.out.println("First Name :" + person.getFirstName());
+                    System.out.println("First Name :" + person.getLastName());
+                }
             }
             statement.close();
             connection.close();
